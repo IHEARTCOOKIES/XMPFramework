@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#warning Don't forget to add a prefix header file and macro for NSLog
+#warning if we're inheriting the name NSLog in the macro, make sure that it doesn't come up in the end-client application (i.e, XMPFramework-Example.app)
+
 #warning Add documentation
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,11 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dumpXMPData;
 #endif
 
-/** A boolean for if the file is opened for editing or not. This property defaults to YES, as the file is automatically opened during initialization, however, if you were to close the stream, then you'd need to re-open the file by setting this property to YES. */
-@property (nonatomic, assign, readwrite) BOOL fileOpen;
-
 /** A NSData representation of the file that we're referencing. */
 @property (nonnull, nonatomic, copy, readonly) NSData *data;
+
+/** A reference to the file that we initialized with. If the `initWithData:` initializer was used, this will point to a temporary file. */
+@property (nonnull, nonatomic, strong, readonly) NSURL *filePath;
 
 @end
 NS_ASSUME_NONNULL_END
