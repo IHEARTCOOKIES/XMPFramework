@@ -84,7 +84,6 @@
   return openSuccessful;
 }
 - (void)closeFile {
-  // Close the file. Since we're readonly, there's no need to keep it open
   _XMPFile.CloseFile();
 }
 
