@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <XMPFramework/XMPProperty.h>
 
 #warning Don't forget to add a prefix header file and macro for NSLog
 #warning if we're inheriting the name NSLog in the macro, make sure that it doesn't come up in the end-client application (i.e, XMPFramework-Example.app)
@@ -29,8 +30,33 @@ NS_ASSUME_NONNULL_BEGIN
 #warning Test
 - (instancetype)initWithData:(NSData *)data;
 
+#pragma mark - Get Value For Key Methods
+
+- (BOOL)boolForKey:(NSString *)key;
+- (double)doubleForKey:(NSString *)key;
+- (NSInteger)integerForKey:(NSString *)key;
 - (nullable NSString *)stringForKey:(NSString *)key;
-- (nullable NSString *)stringForKey:(NSString *)key withPropertyName:(NSString *)propertyName; // NS_XMP
+
+#pragma mark - Get Value For Key w/ Error Methods
+
+- (BOOL)boolForKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (double)doubleForKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (NSInteger)integerForKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (nullable NSString *)stringForKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+
+#pragma mark - Get Value For Key w/ XMPProperty Methods
+
+- (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (double)doubleForKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (NSInteger)integerForKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (nullable NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property;
+
+#pragma mark - Get Value For Key w/ XMPProperty & Error Methods
+
+- (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (double)doubleForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (NSInteger)integerForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (nullable NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
 
 #ifdef DEBUG
 - (void)dumpXMPData;

@@ -8,14 +8,29 @@
 #import "XMPReader.h"
 #import "XMPReader+Private.h"
 
+#warning Create a batch reader, follow same paradigm as BatchWriter
+
+#warning double defined, add in prefix
+#define HANDLE_XMP_ERROR($e) if (error) { *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier code:100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal Error: %s", $e.GetErrMsg()]}]; }
+
+/** Attempts to read a primitive type for the specified key. */
+#define READ_PRIMITIVE_FOR_KEY($key, $property, $varType, $nullifier, $meta, $accessor) ({ \
+$varType *propValue = new $varType($nullifier); BOOL success = NO; \
+try { success = $meta.$accessor($property.URI.UTF8String, $key.UTF8String, propValue, NULL); } catch (XMP_Error &e) { HANDLE_XMP_ERROR(e); } \
+$varType returnValue = *propValue; delete propValue; \
+success ? returnValue : $nullifier; })
+
+/** Attempts to read an object for the specified key. */
+#define READ_OBJECT_FOR_KEY($key, $property, $varType, $nullifier, $meta, $accessor) ({ \
+$varType propValue = $nullifier; BOOL success = NO; \
+try { success = $meta.$accessor($property.URI.UTF8String, $key.UTF8String, &propValue, NULL); } catch (XMP_Error &e) { HANDLE_XMP_ERROR(e); } \
+success ? propValue : $nullifier; })
+
 @interface XMPReader ()
 @property (nonatomic, strong, readwrite) NSURL *filePath;
 @end
 
-@implementation XMPReader {
-  SXMPFiles _XMPFile;
-  SXMPMeta _metaData;
-}
+@implementation XMPReader
 
 #pragma mark - Dealloc
 - (void)dealloc {
@@ -26,7 +41,7 @@
 
 #pragma mark - Private Getters
 - (unsigned int)XMPDefaultOpenFlags {
-  return kXMPFiles_OpenForRead | kXMPFiles_OpenUseSmartHandler;
+  return kXMPFiles_OpenForRead;
 }
 
 #pragma mark - Public Getters
@@ -39,8 +54,8 @@
   // Open the file
   _filePath = [self openFile:filePath] ? [filePath copy] : nil;
   
-  // Close the file immediately if we're a reader, as there's no need to keep it open
-  if ([self class] == [XMPReader class]) { [self closeFile]; }
+  // Close the file immediately if we're only attempting to read it, as there's no need to keep it open
+  if (self.XMPDefaultOpenFlags & kXMPFiles_OpenForRead) { [self closeFile]; }
 }
 
 #pragma mark - Designated Initializer(s)
@@ -57,6 +72,61 @@
   return writeSuccess ? [self initWithFilePath:filePath] : nil;
 }
 
+#pragma mark - Public Methods
+- (BOOL)boolForKey:(NSString *)key {
+  return [self boolForKey:key error:nil];
+}
+- (double)doubleForKey:(NSString *)key {
+  return [self doubleForKey:key error:nil];
+}
+- (NSInteger)integerForKey:(NSString *)key {
+  return [self integerForKey:key error:nil];
+}
+- (nullable NSString *)stringForKey:(NSString *)key {
+  return [self stringForKey:key error:nil];
+}
+- (BOOL)boolForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
+  return [self boolForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
+}
+- (double)doubleForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
+  return [self doubleForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
+}
+- (NSInteger)integerForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
+  return [self integerForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
+}
+- (nullable NSString *)stringForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
+  return [self stringForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
+}
+- (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property {
+  return [self boolForKey:key withProperty:property error:nil];
+}
+- (double)doubleForKey:(NSString *)key withProperty:(XMPProperty *)property {
+  return [self doubleForKey:key withProperty:property error:nil];
+}
+- (NSInteger)integerForKey:(NSString *)key withProperty:(XMPProperty *)property {
+  return [self integerForKey:key withProperty:property error:nil];
+}
+- (nullable NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property {
+  return [self stringForKey:key withProperty:property error:nil];
+}
+- (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
+  return READ_PRIMITIVE_FOR_KEY(key, property, BOOL, NO, _metaData, GetProperty_Bool);
+}
+- (double)doubleForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
+  return READ_PRIMITIVE_FOR_KEY(key, property, double, 0, _metaData, GetProperty_Float);
+}
+- (NSInteger)integerForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
+#if __LP64__ || (TARGET_OS_EMBEDDED && !TARGET_OS_IPHONE) || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64
+  return READ_PRIMITIVE_FOR_KEY(key, property, XMP_Int64, 0, _metaData, GetProperty_Int64);
+#else
+  return READ_PRIMITIVE_FOR_KEY(key, property, XMP_Int32, 0, _metaData, GetProperty_Int);
+#endif
+}
+- (nullable NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
+  std::string propVal = READ_OBJECT_FOR_KEY(key, property, std::string, "", _metaData, GetProperty);
+  return propVal.length() > 0 ? [NSString stringWithCString:propVal.c_str() encoding:[NSString defaultCStringEncoding]] : nil;
+}
+
 #pragma mark - Private Methods
 - (BOOL)openFile:(NSURL *)filePath {
   BOOL openSuccessful = NO;
@@ -65,10 +135,10 @@
     SXMPMeta meta;
     
     // First, try to open the file with read only and a smart handler
-    openSuccessful = XMPFile.OpenFile(filePath.path.UTF8String, kXMP_UnknownFile, self.XMPDefaultOpenFlags);
+    openSuccessful = XMPFile.OpenFile(filePath.path.UTF8String, kXMP_UnknownFile, self.XMPDefaultOpenFlags | kXMPFiles_OpenUseSmartHandler);
     
-    // If we failed to open the file by using the options above, try opening with packet scanning
-    if (openSuccessful == NO) { openSuccessful = XMPFile.OpenFile(filePath.path.UTF8String, kXMP_UnknownFile, kXMPFiles_OpenForUpdate | kXMPFiles_OpenUsePacketScanning); }
+    // If we failed to open the file, then try opening with packet scanning
+    if (openSuccessful == NO) { openSuccessful = XMPFile.OpenFile(filePath.path.UTF8String, kXMP_UnknownFile, self.XMPDefaultOpenFlags | kXMPFiles_OpenUsePacketScanning); }
     
     // If we opened it successfully, get the XMP data. Else, print the path for the file that failed to open
     if (openSuccessful) {
@@ -77,30 +147,14 @@
       NSLog(@"Unable to open file for path: %@", filePath.path);
     }
     
-    // Copy over variables if the opening was succssful
+    // Copy over variables if we opened the file successfully
     _XMPFile = openSuccessful ? XMPFile : "";
-    _metaData = openSuccessful ? meta : nil;
+    _metaData = openSuccessful ? meta : NULL;
   }
   return openSuccessful;
 }
 - (void)closeFile {
   _XMPFile.CloseFile();
-}
-
-#pragma mark - Public Methods
-- (NSString *)stringForKey:(NSString *)key {
-  return [self stringForKey:key withPropertyName:[NSString stringWithUTF8String:kXMP_NS_XMP]];
-}
-- (NSString *)stringForKey:(NSString *)key withPropertyName:(NSString *)propertyName {
-  std::string propertyValue = "";
-  BOOL success = NO;
-  try {
-    // Create the xmp object and get the xmp data
-    success = _metaData.GetProperty(propertyName.UTF8String, key.UTF8String, &propertyValue, NULL);
-  } catch (XMP_Error &e) {
-    NSLog(@"Read error: %s", e.GetErrMsg());
-  }
-  return success ? [NSString stringWithCString:propertyValue.c_str() encoding:[NSString defaultCStringEncoding]] : nil;
 }
 
 #ifdef DEBUG
@@ -113,7 +167,7 @@
 static XMP_Status DumpCallback(void * refCon, XMP_StringPtr outStr, XMP_StringLen outLen) {
   XMP_Status status = 0;
   FILE *outFile = static_cast<FILE *>(refCon);
-  size_t count = fwrite (outStr, 1, outLen, outFile);
+  size_t count = fwrite(outStr, 1, outLen, outFile);
   if (count != outLen) { status = errno; }
   return status;
 }

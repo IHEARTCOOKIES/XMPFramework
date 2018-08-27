@@ -6,23 +6,48 @@
 //
 
 #import <XMPFramework/XMPReader.h>
-#import <XMPFramework/XMPProperty.h>
 
 #warning Add documentation
 
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPWriter : XMPReader
 
-- (void)setString:(NSString *)string forKey:(NSString *)key;
-- (void)setString:(NSString *)string forKey:(NSString *)key withProperty:(XMPProperty *)property;
+#pragma mark - Set Value For Key Methods
 
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key;
+- (BOOL)setDouble:(double)value forKey:(NSString *)key;
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key;
+- (BOOL)setString:(NSString *)value forKey:(NSString *)key;
+
+#pragma mark - Set Value For Key w/ Error Methods
+
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setDouble:(double)value forKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setString:(NSString *)value forKey:(NSString *)key error:(NSError *_Nullable __autoreleasing *)error;
+
+#pragma mark - Set Value For Key w/ XMPProperty Methods
+
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (BOOL)setDouble:(double)value forKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key withProperty:(XMPProperty *)property;
+- (BOOL)setString:(NSString *)value forKey:(NSString *)key withProperty:(XMPProperty *)property;
+
+#pragma mark - Set Value For Key w/ XMPProperty & Error Methods
+
+- (BOOL)setBool:(BOOL)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setDouble:(double)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+- (BOOL)setString:(NSString *)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
+
+#pragma mark - Supporting Methods
+
+/**
+ Attempts to synchronize the changes made to the XMP file to the referenced file on disk.
+
+ @return Returns a YES for if the changes made were synced successfully.
+ */
 - (BOOL)synchronize;
-
-
-#warning do we need this one?
-/** A boolean for if the file is opened for editing or not. This property defaults to YES, as the file is automatically opened during initialization, however, if you were to close the stream, then you'd need to re-open the file by setting this property to YES. */
-@property (nonatomic, assign, readonly) BOOL fileOpen;
-
 
 @end
 NS_ASSUME_NONNULL_END

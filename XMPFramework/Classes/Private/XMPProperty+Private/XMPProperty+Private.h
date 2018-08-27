@@ -2,7 +2,7 @@
 //  XMPProperty+Private.h
 //  XMPFramework
 //
-//  Created by Filip Busic on 8/19/18.
+//  Created by Filip Busic on 8/25/18.
 //
 
 #import "XMPProperty.h"
