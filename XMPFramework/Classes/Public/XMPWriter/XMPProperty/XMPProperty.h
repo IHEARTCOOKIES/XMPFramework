@@ -7,26 +7,40 @@
 
 #import <Foundation/Foundation.h>
 
+#warning add documentation
+
 NS_ASSUME_NONNULL_BEGIN
-@interface XMPProperty : NSObject
+@interface XMPProperty : NSObject <NSCopying>
 
-- (instancetype _Nullable)init __attribute__((unavailable("Please use one of the designated initalizers.")));
-
-- (instancetype)initWithNamespaceURI:(NSString *)URI;
-
-- (instancetype)initWithNamespacePrefix:(NSString *)prefix;
-
-- (instancetype)initWithNamespaceURI:(NSString *)URI
-                     namespacePrefix:(NSString *_Nullable)prefix NS_DESIGNATED_INITIALIZER;
+#pragma mark - Convenience Constructor(s)
 
 + (instancetype)propertyWithNamespaceURI:(NSString *)URI;
 + (instancetype)propertyWithNamespacePrefix:(NSString *)prefix;
 
 + (instancetype)propertyWithNamespaceURI:(NSString *)URI
-                         namespacePrefix:(NSString *_Nullable)prefix;
+                         namespacePrefix:(NSString *)prefix;
+
+#pragma mark - Unavailable Initializer(s)
+
+- (nullable instancetype)init __attribute__((unavailable("Please use one of the designated initalizers.")));
+
+#pragma mark - Initializer(s)
+
+- (instancetype)initWithNamespaceURI:(NSString *)URI;
+
+- (instancetype)initWithNamespacePrefix:(NSString *)prefix;
+
+#pragma mark - Designated Initializer(s)
+
+- (nullable instancetype)initWithNamespaceURI:(NSString *_Nullable)URI
+                              namespacePrefix:(NSString *_Nullable)prefix NS_DESIGNATED_INITIALIZER;
+
+#pragma mark - Instance Properties
 
 @property (nullable, nonatomic, copy, readonly) NSString *URI;
 @property (nullable, nonatomic, copy, readonly) NSString *prefix;
+
+@property (nonatomic, assign, readonly) BOOL isValid;
 
 @end
 NS_ASSUME_NONNULL_END

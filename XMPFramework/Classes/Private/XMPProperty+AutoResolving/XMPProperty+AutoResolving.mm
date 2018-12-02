@@ -23,10 +23,11 @@
       meta.GetNamespaceURI(prefix.c_str(), &URI);
       self.URI = [NSString stringWithUTF8String:URI.c_str()];
     } catch (XMP_Error &e) {
-#warning Fix error
-      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                   code:100
-                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal XMP Error: %s", e.GetErrMsg()]}];
+      if (error) {
+        *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                     code:XMPFrameworkErrorCodeNamespaceURIFailedToResolve
+                                 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal XMP Error: %s", e.GetErrMsg()]}];
+      }
     }
   }
   
@@ -36,10 +37,11 @@
       meta.GetNamespacePrefix(URI.c_str(), &prefix);
       self.prefix = [NSString stringWithUTF8String:prefix.c_str()];
     } catch (XMP_Error &e) {
-#warning Fix error, check if error exists, i.e, if (error)
-      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                   code:100
-                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal XMP Error: %s", e.GetErrMsg()]}];
+      if (error) {
+        *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                     code:XMPFrameworkErrorCodeNamespacePrefixFailedToResolve
+                                 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal XMP Error: %s", e.GetErrMsg()]}];
+      }
     }
   }
   
@@ -51,17 +53,19 @@
         // Update our prefix with the suggested namespace returned from `RegisterNamespace:`
         self.prefix = [NSString stringWithUTF8String:prefix.c_str()];
       }else{
-#warning fix error, check if error exists, i.e, if (error)
-        *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                     code:100
-                                 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"We tried to register namespace: %@ for prefix: %@ but failed.", self.URI, self.prefix]}];
+        if (error) {
+          *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                       code:XMPFrameworkErrorCodeNamespaceFailedToRegister
+                                   userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"We tried to register namespace: %@ for prefix: %@ but failed.", self.URI, self.prefix]}];
+        }
       }
     }
   }else{
-#warning fix error, check if error exists, i.e, if (error)
-    *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                 code:100
-                             userInfo:@{NSLocalizedDescriptionKey:@"The prefix or URI was invalid."}];
+    if (error) {
+      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                   code:XMPFrameworkErrorCodeNamespaceInvalid
+                               userInfo:@{NSLocalizedDescriptionKey:@"The prefix or URI was invalid."}];
+    }
   }
   
   return resolvedSuccessfully;

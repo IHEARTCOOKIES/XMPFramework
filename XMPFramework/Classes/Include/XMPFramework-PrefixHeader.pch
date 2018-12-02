@@ -1,0 +1,29 @@
+//
+//  XMPFramework-PrefixHeader.pch
+//  XMPFramework
+//
+//  Created by Filip Busic on 9/1/18.
+//
+
+#ifndef XMPFramework_PrefixHeader_pch
+#define XMPFramework_PrefixHeader_pch
+
+#import <XMPFramework/XMPFrameworkErrors.h>
+
+/* Validation */
+
+#define IS_VALID_NSSTRING(property) (property != nil && [property isKindOfClass:[NSString class]] && [property stringByReplacingOccurrencesOfString:@" " withString:@""].length > 0 )
+
+/* XMPFramework Common Helpers */
+
+#define HANDLE_XMP_ERROR($e) if (error) { *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier code:XMPFrameworkErrorCodeGeneral userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal Error: %s", $e.GetErrMsg()]}]; }
+
+/* XMP Framework Logging */
+
+#ifdef ENABLE_XMPFRAMEWORK_LOGGING
+#define NSLog(__FORMAT__, ...) NSLog((@"%@: " __FORMAT__), NSStringFromClass([self class]), ##__VA_ARGS__)
+#else
+#define NSLog(...);
+#endif
+
+#endif /* XMPFramework_PrefixHeader_pch */

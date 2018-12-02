@@ -7,6 +7,8 @@
 
 #import "XMPProperty.h"
 
+#warning add documentation or ::nodoc:: tags
+
 @interface XMPProperty ()
 @property (nullable, nonatomic, copy, readwrite) NSString *URI;
 @property (nullable, nonatomic, copy, readwrite) NSString *prefix;

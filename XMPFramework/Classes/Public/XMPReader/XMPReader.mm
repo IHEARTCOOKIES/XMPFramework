@@ -8,11 +8,6 @@
 #import "XMPReader.h"
 #import "XMPReader+Private.h"
 
-#warning Create a batch reader, follow same paradigm as BatchWriter
-
-#warning double defined, add in prefix
-#define HANDLE_XMP_ERROR($e) if (error) { *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier code:100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Internal Error: %s", $e.GetErrMsg()]}]; }
-
 /** Attempts to read a primitive type for the specified key. */
 #define READ_PRIMITIVE_FOR_KEY($key, $property, $varType, $nullifier, $meta, $accessor) ({ \
 $varType *propValue = new $varType($nullifier); BOOL success = NO; \
@@ -34,9 +29,11 @@ success ? propValue : $nullifier; })
 
 #pragma mark - Dealloc
 - (void)dealloc {
-  // Terminate instances
-  SXMPFiles::Terminate();
-  SXMPMeta::Terminate();
+  // Terminate instances if the fileURL is valid
+  if (self.filePath.isFileURL) {
+    SXMPFiles::Terminate();
+    SXMPMeta::Terminate();
+  }
 }
 
 #pragma mark - Private Getters
@@ -60,15 +57,21 @@ success ? propValue : $nullifier; })
 
 #pragma mark - Designated Initializer(s)
 - (instancetype)initWithFilePath:(NSURL *)filePath {
-  BOOL initialized = SXMPMeta::Initialize() && SXMPFiles::Initialize(kXMP_NoOptions);
+  BOOL initialized = filePath.isFileURL ? SXMPMeta::Initialize() && SXMPFiles::Initialize(kXMP_NoOptions) : NO;
   if (initialized && (self = [super init])) {
     self.filePath = filePath;
   }
   return initialized ? self : nil;
 }
 - (instancetype)initWithData:(NSData *)data {
-  NSURL *filePath = [NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"XMPFramework_tmp_%.0f.innerTempXMP", [[NSDate date] timeIntervalSince1970]]]];
-  BOOL writeSuccess = [data writeToURL:filePath atomically:YES];
+  NSURL *filePath = nil;
+  BOOL validData = data.length > 0, writeSuccess = NO;
+  if (validData) {
+    filePath = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"XMPFramework_tmp_%.0f.innerTempXMP", [[NSDate date] timeIntervalSince1970]]]];
+    NSError *error = nil;
+    writeSuccess = [data writeToURL:filePath options:NSDataWritingAtomic error:&error];
+    if (error) { NSLog(@"Error: %@", error); }
+  }
   return writeSuccess ? [self initWithFilePath:filePath] : nil;
 }
 
@@ -82,7 +85,7 @@ success ? propValue : $nullifier; })
 - (NSInteger)integerForKey:(NSString *)key {
   return [self integerForKey:key error:nil];
 }
-- (nullable NSString *)stringForKey:(NSString *)key {
+- (NSString *)stringForKey:(NSString *)key {
   return [self stringForKey:key error:nil];
 }
 - (BOOL)boolForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
@@ -94,7 +97,7 @@ success ? propValue : $nullifier; })
 - (NSInteger)integerForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
   return [self integerForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
 }
-- (nullable NSString *)stringForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
+- (NSString *)stringForKey:(NSString *)key error:(NSError *__autoreleasing *)error {
   return [self stringForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]] error:error];
 }
 - (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property {
@@ -106,11 +109,11 @@ success ? propValue : $nullifier; })
 - (NSInteger)integerForKey:(NSString *)key withProperty:(XMPProperty *)property {
   return [self integerForKey:key withProperty:property error:nil];
 }
-- (nullable NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property {
+- (NSString *)stringForKey:(NSString *)key withProperty:(XMPProperty *)property {
   return [self stringForKey:key withProperty:property error:nil];
 }
 - (BOOL)boolForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
-  return READ_PRIMITIVE_FOR_KEY(key, property, BOOL, NO, _metaData, GetProperty_Bool);
+  return READ_PRIMITIVE_FOR_KEY(key, property, bool, NO, _metaData, GetProperty_Bool);
 }
 - (double)doubleForKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
   return READ_PRIMITIVE_FOR_KEY(key, property, double, 0, _metaData, GetProperty_Float);
@@ -156,21 +159,5 @@ success ? propValue : $nullifier; })
 - (void)closeFile {
   _XMPFile.CloseFile();
 }
-
-#ifdef DEBUG
-#pragma mark - Debug Methods
-- (void)dumpXMPData {
-  _metaData.DumpObject(DumpCallback, stdout);
-}
-
-#pragma mark - Dump XMP Data Callback
-static XMP_Status DumpCallback(void * refCon, XMP_StringPtr outStr, XMP_StringLen outLen) {
-  XMP_Status status = 0;
-  FILE *outFile = static_cast<FILE *>(refCon);
-  size_t count = fwrite(outStr, 1, outLen, outFile);
-  if (count != outLen) { status = errno; }
-  return status;
-}
-#endif
 
 @end

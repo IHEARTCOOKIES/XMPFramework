@@ -7,10 +7,11 @@
 
 #import <XMPFramework/XMPWriter.h>
 
+#warning add documentation
+
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPBatchWriter : XMPWriter
 
-#warning add typedefs for NSDictionary, it's not NSString
 - (BOOL)setDictionary:(NSDictionary<NSString *, NSObject *> *)dictionary;
 - (BOOL)setDictionary:(NSDictionary<NSString *, NSObject *> *)dictionary error:(NSError *_Nullable __autoreleasing *)error;
 - (BOOL)setDictionary:(NSDictionary<NSString *, NSObject *> *)dictionary forProperty:(XMPProperty *)property;

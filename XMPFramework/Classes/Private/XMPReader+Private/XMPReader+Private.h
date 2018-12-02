@@ -8,7 +8,7 @@
 #import "XMPReader.h"
 #import "AdobeXMPToolKit.h"
 
-#define VERIFY_XMP_DATA($BOOL, $returnValue) if ($BOOL == NO) { NSLog(@"The current opened file has no XMP data available."); return $returnValue; }
+#warning add documentation or ::nodoc:: tags
 
 NS_PROTOCOL_REQUIRES_EXPLICIT_IMPLEMENTATION
 @protocol XMPReaderProtocol <NSObject>

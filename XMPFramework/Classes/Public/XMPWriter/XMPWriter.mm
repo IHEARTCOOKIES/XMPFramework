@@ -11,12 +11,9 @@
 #import "XMPProperty+Private.h"
 #import "XMPProperty+AutoResolving.h"
 
-#warning don't forget to switch this to common NSError handling future logic
-#define HANDLE_XMP_ERROR($e) if (error) { *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier code:100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Error: %s", $e.GetErrMsg()]}]; }
-
 @implementation XMPWriter
 
-#pragma mark - Private Getters
+#pragma mark - Overriden Getters
 - (unsigned int)XMPDefaultOpenFlags {
   return kXMPFiles_OpenForUpdate;
 }
@@ -70,6 +67,14 @@
 - (BOOL)setString:(NSString *)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
   return [self setObject:value forKey:key withProperty:property error:error];
 }
+- (BOOL)removeValueForKey:(NSString *)key {
+  return [self removeValueForKey:key withProperty:[XMPProperty propertyWithNamespaceURI:[NSString stringWithUTF8String:kXMP_NS_XMP]]];
+}
+- (BOOL)removeValueForKey:(NSString *)key withProperty:(XMPProperty *)property {
+  SXMPMeta meta = self->_metaData;
+  meta.DeleteProperty(property.URI.UTF8String, key.UTF8String);
+  return meta.DoesPropertyExist(property.URI.UTF8String, key.UTF8String) == NO;
+}
 - (BOOL)synchronize {
   // 1. Close the file to save the changes to disk
   [self closeFile];
@@ -89,15 +94,15 @@
   return [self setObject:value forKey:key withProperty:property error:nil];
 }
 - (BOOL)setObject:(NSObject *)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *__autoreleasing *)error {
-#warning not threadsafe... think about global/local mutex locks to solve this problem.
-  
-  SXMPMeta meta = _metaData;
+  SXMPMeta meta = self->_metaData;
   if ([property resolvePropertyInfoFromMeta:meta withError:error] == NO) {
-#warning fix copy
-    *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                 code:100
-                             userInfo:@{NSLocalizedDescriptionKey:@"The XMPProperty object was invalid. Please double check that you're using a valid URI/Prefix value."}];
-    return NO; }
+    if (error) {
+      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                   code:XMPFrameworkErrorCodePropertyInvalid
+                               userInfo:@{NSLocalizedDescriptionKey:@"The XMPProperty object was invalid. Please double check that you're passing a valid XMPProperty object."}];
+    }
+    return NO;
+  }
   
   // Set the value accordingly
   if ([value isKindOfClass:[NSNumber class]]) {
@@ -126,10 +131,9 @@
       } catch (XMP_Error &e) { HANDLE_XMP_ERROR(e); }
 #endif
     }else{
-#warning implement proper error codes
       if (error) {
         *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                     code:415
+                                     code:XMPFrameworkErrorCodeUnsupportedPrimitiveType
                                  userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The value type (%s) was not supported by: %@", objCType, [XMPWriter class]]}];
       }
     }
@@ -138,22 +142,22 @@
       meta.SetProperty(property.URI.UTF8String, key.UTF8String, ((NSString *)value).UTF8String);
     } catch (XMP_Error &e) { HANDLE_XMP_ERROR(e); }
   }else{
-#warning implement proper error codes
-    *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                 code:416
-                             userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The value class (%@) was not supported by: %@", [value class], [XMPWriter class]]}];
+    if (error) {
+      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                   code:XMPFrameworkErrorCodeUnsupportedObjectType
+                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The value class (%@) was not supported by: %@", [value class], [XMPWriter class]]}];
+    }
   }
   
-  BOOL setSuccessfully = _XMPFile.CanPutXMP(meta);
+  BOOL setSuccessfully = self->_XMPFile.CanPutXMP(meta);
   if (setSuccessfully) {
-#warning this only helps the saving bit... But if 3 threads have different info, the file will jump to all different conclusions, and not be properly thread safe
-    @synchronized (self) { _XMPFile.PutXMP(meta); _metaData = meta; }
+    self->_XMPFile.PutXMP(meta); self->_metaData = meta;
   }else{
-    NSLog(@"Can't update!!!");
-#warning implement proper error codes
-    *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
-                                 code:100
-                             userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Failed to set key: %@ for value: %@. The XMP file couldn't be updated for path: %@.", key, value, self.filePath]}];
+    if (error) {
+      *error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                   code:XMPFrameworkErrorCodeUnknownWriteError
+                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Failed to set key: %@ for value: %@. The XMP file couldn't be updated for path: %@.", key, value, self.filePath]}];
+    }
   }
   
   return setSuccessfully && error ? *error == nil : YES;

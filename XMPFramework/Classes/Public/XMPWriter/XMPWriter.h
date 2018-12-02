@@ -8,6 +8,7 @@
 #import <XMPFramework/XMPReader.h>
 
 #warning Add documentation
+#warning Add delete method property plus XCTest
 
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPWriter : XMPReader
@@ -40,7 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)setInteger:(NSInteger)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
 - (BOOL)setString:(NSString *)value forKey:(NSString *)key withProperty:(XMPProperty *)property error:(NSError *_Nullable __autoreleasing *)error;
 
-#pragma mark - Supporting Methods
+#pragma mark - Remove Methods
+
+- (BOOL)removeValueForKey:(NSString *)key;
+- (BOOL)removeValueForKey:(NSString *)key withProperty:(XMPProperty *)property;
+
+#pragma mark - Synchronizing Methods
 
 /**
  Attempts to synchronize the changes made to the XMP file to the referenced file on disk.
