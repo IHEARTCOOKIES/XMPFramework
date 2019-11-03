@@ -50,7 +50,7 @@ XMPFramework was authored by Filip Busic (the guy who likes cookies). Feel free 
 
 XMPFramework is available under the MIT license. The underlying component, [Adobe XMP ToolKit][2], that makes this framework possible runs on BSD. See the LICENSE file for more info.
 
-[1]: https://imgur.com/a/UnGcraq
+[1]: https://i.imgur.com/uWunVdE.png
 [2]: https://github.com/IHEARTCOOKIES/Adobe-XMP-ToolKit
 [3]: https://github.com/IHEARTCOOKIES/XMPFramework/blob/master/Example/Tests/Tests.m
 [4]: https://developer.apple.com/documentation/foundation/nsuserdefaults
