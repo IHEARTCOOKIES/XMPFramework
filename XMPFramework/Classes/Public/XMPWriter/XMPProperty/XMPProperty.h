@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Convenience Constructor(s)
 
-+ (instancetype)propertyWithNamespaceURI:(NSString *)URI;
-+ (instancetype)propertyWithNamespacePrefix:(NSString *)prefix;
++ (nullable instancetype)propertyWithNamespaceURI:(NSString *)URI;
++ (nullable instancetype)propertyWithNamespacePrefix:(NSString *)prefix;
 
-+ (instancetype)propertyWithNamespaceURI:(NSString *)URI
-                         namespacePrefix:(NSString *)prefix;
++ (nullable instancetype)propertyWithNamespaceURI:(NSString *)URI
+                                  namespacePrefix:(NSString *)prefix;
 
 #pragma mark - Unavailable Initializer(s)
 
@@ -24,9 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Initializer(s)
 
-- (instancetype)initWithNamespaceURI:(NSString *)URI;
+- (nullable instancetype)initWithNamespaceURI:(NSString *)URI;
 
-- (instancetype)initWithNamespacePrefix:(NSString *)prefix;
+- (nullable instancetype)initWithNamespacePrefix:(NSString *)prefix;
 
 #pragma mark - Designated Initializer(s)
 

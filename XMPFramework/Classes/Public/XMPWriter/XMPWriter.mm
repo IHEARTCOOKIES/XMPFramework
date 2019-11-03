@@ -160,7 +160,7 @@
     }
   }
   
-  return setSuccessfully && error ? *error == nil : YES;
+  return setSuccessfully && error != nil ? *error == nil : YES;
 }
 
 @end
