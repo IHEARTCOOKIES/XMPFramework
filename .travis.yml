@@ -9,5 +9,6 @@ branches:
 script:
 - gem install cocoapods # Since Travis is not always on latest version
 - pod install --project-directory=Example
-- set -o pipefail && xcodebuild -workspace Example/XMPFramework.xcworkspace -scheme XMPFramework-Example ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
+- xctool -workspace Example/XMPFramework.xcworkspace -scheme XMPFramework-Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO 
+- xctool test -workspace Example/XMPFramework.xcworkspace -scheme XMPFramework-Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
 - pod spec lint --allow-warnings
