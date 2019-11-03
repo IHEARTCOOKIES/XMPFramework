@@ -26,4 +26,4 @@ Filip Busic
 
 ## License
 
-XMPFramework is available under the MIT license. See the LICENSE file for more info.
+XMPFramework is available under the MIT license. The underlying component, Adobe XMP ToolKit, that makes this framework possible runs on BSD. See the LICENSE file for more info.

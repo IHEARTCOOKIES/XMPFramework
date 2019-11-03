@@ -30,6 +30,5 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'IOS_ENV=1' }
   s.libraries = 'resolv', 'stdc++'
   s.ios.deployment_target = '8.0'
-  s.pod_target_xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/../../XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include' }
-  
+  s.pod_target_xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/../../XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include $(SRCROOT)/../../XMPFramework/Adobe-XMP-ToolKit/include' }
 end
