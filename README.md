@@ -43,6 +43,10 @@ BOOL syncSuccessful = [writer synchronize]; // synchronizes the changes
 
 For more concrete examples of writing XMP data (using properties, namespace URI, etc.), see the `Tests.m` file located in the [Tests directory][3].
 
+## Requirements
+
+Runs on iOS 8.0+, 64 bit and above. 32 bit is not supported by [Adobe XMP ToolKit][2].
+
 ## Who created it?
 
 XMPFramework was authored by Filip Busic (the guy who likes cookies). Feel free to shoot a message to the author via [Twitter][5] if you have any questions or ideas on how to make XMPFramework better.
