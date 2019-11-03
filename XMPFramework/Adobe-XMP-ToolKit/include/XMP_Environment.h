@@ -29,6 +29,21 @@
 // ! Tempting though it might be to have a standard macro for big or little endian, there seems to
 // ! be no decent way to do that on our own in UNIX. Forcing it on the client isn't acceptable.
 
+/* XMPFramework Addition, seems to work fine as opposed to setting variables by hand. */
+
+#if defined ( _WIN64 ) || defined ( _WIN32 )
+    #define WIN_ENV 1
+#elif __APPLE__
+    #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+        #define IOS_ENV 1
+    #else
+        #define TARGET_OS_OSX 1
+        #define MAC_ENV 1
+    #endif
+#elif __linux || __unix
+    #define UNIX_ENV 1
+#endif
+
 #if defined ( MAC_ENV )
 
 	#if 0	// ! maybe someday - ! MAC_ENV
