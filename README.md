@@ -1,7 +1,7 @@
 ![logo][1]
 __`XMPFramework` is a simple Objective-C wrapper on top of [Adobe XMP ToolKit][2] that allow for a native API similar to `NSUserDefaults` to read/write XMP data.__
 
-[![CI Status](https://img.shields.io/travis/Filip Busic/XMPFramework.svg?style=flat)](https://travis-ci.org/Filip Busic/XMPFramework)
+[![CI Status](https://img.shields.io/travis/IHEARTCOOKIES/XMPFramework.svg?style=flat)](https://travis-ci.org/IHEARTCOOKIES/XMPFramework)
 [![Version](https://img.shields.io/cocoapods/v/XMPFramework.svg?style=flat)](https://cocoapods.org/pods/XMPFramework)
 [![License](https://img.shields.io/cocoapods/l/XMPFramework.svg?style=flat)](https://cocoapods.org/pods/XMPFramework)
 [![Platform](https://img.shields.io/cocoapods/p/XMPFramework.svg?style=flat)](https://cocoapods.org/pods/XMPFramework)
