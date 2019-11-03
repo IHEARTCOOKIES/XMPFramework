@@ -27,7 +27,6 @@ Pod::Spec.new do |s|
   s.source_files = 'XMPFramework/Classes/**/*', 'XMPFramework/Adobe-XMP-ToolKit/include/**/*'
   s.vendored_libraries = 'XMPFramework/Adobe-XMP-ToolKit/libraries/libXMPCoreStatic.a', 'XMPFramework/Adobe-XMP-ToolKit/libraries/libXMPFilesStatic.a'
   s.module_name = 'XMPFramework'
-  s.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'IOS_ENV=1' }
   s.libraries = 'resolv', 'stdc++'
   s.ios.deployment_target = '8.0'
   s.pod_target_xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include $(SRCROOT)/../../XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include $(SRCROOT)/../../XMPFramework/Adobe-XMP-ToolKit/include',
