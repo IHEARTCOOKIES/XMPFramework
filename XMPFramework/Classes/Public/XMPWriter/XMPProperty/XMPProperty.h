@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#warning add documentation
-
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPProperty : NSObject <NSCopying>
 

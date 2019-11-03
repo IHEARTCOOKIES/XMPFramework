@@ -7,8 +7,6 @@
 
 #import <XMPFramework/XMPWriter.h>
 
-#warning add documentation
-
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPBatchWriter : XMPWriter
 

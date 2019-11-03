@@ -7,9 +7,6 @@
 
 #import <XMPFramework/XMPReader.h>
 
-#warning Add documentation
-#warning Add delete method property plus XCTest
-
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPWriter : XMPReader
 

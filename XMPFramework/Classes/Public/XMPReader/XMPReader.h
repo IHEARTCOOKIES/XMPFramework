@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <XMPFramework/XMPProperty.h>
 
-#warning Add documentation
-
 NS_ASSUME_NONNULL_BEGIN
 @interface XMPReader : NSObject
 

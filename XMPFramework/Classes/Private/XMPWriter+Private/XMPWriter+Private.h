@@ -7,8 +7,6 @@
 
 #import "XMPWriter.h"
 
-#warning add documentation or ::nodoc:: tags
-
 NS_PROTOCOL_REQUIRES_EXPLICIT_IMPLEMENTATION
 @protocol XMPWriterProtocol <NSObject>
 @required

@@ -8,10 +8,6 @@
 #import "XMPProperty.h"
 #import "AdobeXMPToolKit.h"
 
-#warning add documentation
-
 @interface XMPProperty (AutoResolving)
-
 - (BOOL)resolvePropertyInfoFromMeta:(SXMPMeta &)meta withError:(NSError *__autoreleasing *)error;
-
 @end
