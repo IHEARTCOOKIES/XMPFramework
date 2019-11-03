@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   
   # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   s.name             = 'XMPFramework'
-  s.version          = '0.0.1'
+  s.version          = '1.0.0'
   s.summary          = 'Simple XMP framework to read/write XMP data.'
   s.description      = 'XMPFramework is a simple Objective-C wrapper on top of Adobe XMP ToolKit that allow for a native API similar to NSUserDefaults to read/write XMP data.'
 
