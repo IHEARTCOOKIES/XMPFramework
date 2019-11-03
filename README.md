@@ -7,6 +7,7 @@ __`XMPFramework` is a simple Objective-C wrapper on top of [Adobe XMP ToolKit][2
 [![Platform](https://img.shields.io/cocoapods/p/XMPFramework.svg?style=flat)](https://cocoapods.org/pods/XMPFramework)
 
 ## Installation
+The quickest way to get up and running would be through the use of cocoapods. Simply add the following line to your Podfile:
 ```ruby
 pod 'XMPFramework'
 ```
@@ -34,8 +35,8 @@ To write multiple bits of data, it's preferred to do this using a `XMPBatchWrite
 ```objective-c
 XMPBatchWriter *writer = [[XMPBatchWriter alloc] initWithFilePath:pathToFile];
 [writer setDictionary:@{
-@"SomeKeyA":@"SomeStringA",
-@"SomeKeyB":@"SomeStringB"
+   @"SomeKeyA":@"SomeStringA",
+   @"SomeKeyB":@"SomeStringB"
 }];
 BOOL syncSuccessful = [writer synchronize]; // synchronizes the changes
 ```
