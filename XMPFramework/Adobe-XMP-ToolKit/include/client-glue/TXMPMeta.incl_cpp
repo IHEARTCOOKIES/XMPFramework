@@ -17,7 +17,6 @@
 
 #include "client-glue/WXMPMeta.hpp"
 
-
 #include "XMPCore/XMPCoreDefines.h"
 #if ENABLE_CPP_DOM_MODEL
 	#include "XMPCore/Interfaces/IMetadata.h"

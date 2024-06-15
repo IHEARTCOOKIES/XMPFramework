@@ -27,9 +27,12 @@ Pod::Spec.new do |s|
   s.source_files = 'XMPFramework/Classes/**/*', 'XMPFramework/Adobe-XMP-ToolKit/include/**/*'
   s.vendored_libraries = 'XMPFramework/Adobe-XMP-ToolKit/libraries/libXMPCoreStatic.a', 'XMPFramework/Adobe-XMP-ToolKit/libraries/libXMPFilesStatic.a'
   s.module_name = 'XMPFramework'
-  s.libraries = 'resolv', 'stdc++'
+  s.libraries = 'resolv'
   s.ios.deployment_target = '12.0'
   s.pod_target_xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include $(SRCROOT)/../../XMPFramework/XMPFramework/Adobe-XMP-ToolKit/include $(SRCROOT)/../../XMPFramework/Adobe-XMP-ToolKit/include' }
-  s.xcconfig = {'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) COCOAPODS=1 IOS_ENV=1 XMP_iOSBuild=1' }
+  s.xcconfig = {
+      'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) COCOAPODS=1 IOS_ENV=1 XMP_iOSBuild=1 XMP_StaticBuild=1',
+      'CLANG_CXX_LIBRARY' => 'libc++'
+  }
   
 end

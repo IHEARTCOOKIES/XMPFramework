@@ -9,7 +9,6 @@
 #define AdobeXMPToolKit_h
 
 #include <string>
-#include <iostream>
 
 // Must be defined to instantiate template classes
 #define TXMP_STRING_TYPE std::string
