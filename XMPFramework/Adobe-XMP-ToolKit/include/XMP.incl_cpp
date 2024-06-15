@@ -18,8 +18,8 @@
 /// clients should build in projects. This ensures that all of the client-side glue code for the
 /// XMP toolkit gets compiled.
 ///
-/// You cannot compile this file directly, because the template's string type must be declared and
-/// only the client can do that. Instead, include this in some other source file. For example,
+/// You cannot compile this file directly, because the template's string type must be declared and 
+/// only the client can do that. Instead, include this in some other source file. For example, 
 /// to use <tt>std::string</tt> you only need these two lines:
 ///
 /// \code
