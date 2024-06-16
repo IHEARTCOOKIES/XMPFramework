@@ -44,7 +44,7 @@ For more concrete examples of writing XMP data (using properties, namespace URI,
 
 ## Requirements
 
-Runs on iOS 8.0+, 64 bit and above. 32 bit is not supported by [Adobe XMP ToolKit][2].
+Runs on iOS 12.0+, 64 bit and above. 32 bit is not supported by [Adobe XMP ToolKit][2].
 
 ## Who created it?
 
